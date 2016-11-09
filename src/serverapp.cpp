@@ -20,7 +20,11 @@ class ServerApp::Impl {
 public:
     Impl() :
     memcachedProxy(new ZMemProxyLocal()),
-    sessionService(new ZSessionService()) {
+    sessionService(new ZSessionService()),
+    dbProxy(new ZDBProxy()),
+    idGen(new ZIdGenerator()),
+    deviceManager(new ZDeviceManager()),
+    woker(new ZWorker()){
         ZServiceLocator::instance()->registerService(ZServiceLocator::ServiceId::MemCacheProxy, memcachedProxy.get());
         ZServiceLocator::instance()->registerService(ZServiceLocator::ServiceId::SessionService, sessionService.get());
         ZServiceLocator::instance()->registerService(ZServiceLocator::ServiceId::DBProxy, dbProxy.get());
@@ -103,7 +107,14 @@ int ServerApp::main(const std::vector<std::string>& args) {
         displayHelp();
     } else {
         d_ptr = new Impl();
-
+        std::string dbHost = config().getString("proxy.db.host", "localhost");
+        int dbPort = config().getInt("proxy.db.port", 6379);
+        d_ptr->dbProxy->connect(dbHost, dbPort);
+        if (!d_ptr->dbProxy->isConnected()) {
+            logger().error("Cannot connect to DB Proxy. Review configuration option for proxy.db.host and proxy.db.port. Current values are proxy.db.host=[%s] and proxy.db.port=[%d]",
+                    dbHost, dbPort);
+            return Application::EXIT_CONFIG;
+        }
 
         for (Impl::ServiceIterator iter = d_ptr->services.begin();
                 iter != d_ptr->services.end();

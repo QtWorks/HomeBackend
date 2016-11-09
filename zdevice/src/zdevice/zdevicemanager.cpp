@@ -9,6 +9,8 @@
 #include <src/zdb/zidgenerator.h>
 #include "zdevicemanager.h"
 
+
+class ZDBKey;
 ZDeviceManager::ZDeviceManager()
 {
 }

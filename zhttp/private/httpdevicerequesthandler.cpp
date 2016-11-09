@@ -68,6 +68,11 @@ Poco::Dynamic::Var HTTPDeviceRequestHandler::handleControlDevice(Poco::Net::HTTP
             return responseData;
         }
 
+        std::string deviceAddress = _params["deviceAddress"];
+        std::string deviceId = _params["deviceId"];
+        std::string control = _params["control"];
+
+
     } catch (Poco::Exception &ex) {
         app.logger().error("Exception while processing message: %s", ex.displayText());
         ReportError::reportTo(HttpApiError::Unknown, responseData);

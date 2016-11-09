@@ -4,6 +4,7 @@
 #include <string>
 #include <src/zdevice/zdevice.h>
 #include <include/zcommon/zserviceinterface.h>
+
 class ZDeviceManager : public ZServiceInterface
 {
 public:

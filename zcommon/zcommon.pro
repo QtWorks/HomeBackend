@@ -365,9 +365,7 @@ HEADERS += \
     include/msgpack/msgpack/preprocessor/seq/transform.hpp \
     include/msgpack/msgpack/preprocessor/seq/variadic_seq_to_seq.hpp \
     include/msgpack/msgpack/preprocessor/slot/detail/counter.hpp \
-    inclINCLUDEPATH += /usr/local/include
-LIBS += -L"/usr/local/lib" -lPocoFoundationd -lPocoJSONd -lPocoNetd -lPocoUtild -lPocoXMLd
-LIBS += -L"/usr/local/lib" -lPocoFoundation -lPocoJSON -lPocoNet -lPocoUtil -lPocoXMLude/msgpack/msgpack/preprocessor/slot/detail/def.hpp \
+    include/msgpack/msgpack/preprocessor/slot/detail/def.hpp \
     include/msgpack/msgpack/preprocessor/slot/detail/shared.hpp \
     include/msgpack/msgpack/preprocessor/slot/detail/slot1.hpp \
     include/msgpack/msgpack/preprocessor/slot/detail/slot2.hpp \
@@ -497,7 +495,6 @@ LIBS += -L"/usr/local/lib" -lPocoFoundation -lPocoJSON -lPocoNet -lPocoUtil -lPo
 
 SOURCES += \
     src/zcommon/stringutil.cpp \
-    src/zcommon/zdbkey.cpp \
     src/zcommon/zmemproxy.cpp \
     src/zcommon/zmemproxylocal.cpp \
     src/zcommon/zservicelocator.cpp \
