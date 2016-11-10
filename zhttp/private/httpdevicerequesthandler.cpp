@@ -24,9 +24,9 @@ void ReportError::reportTo(HttpApiError error, Poco::JSON::Object::Ptr& response
     responseData->set("error", static_cast<int> (error));
 }
 
-HTTPDeviceRequestHandler::HTTPDeviceRequestHandler(const std::string& path, const std::map<std::string, std::string>& params) :
-    HTTPRequestBaseHandler(path),
-    _params(params) {
+HTTPDeviceRequestHandler::HTTPDeviceRequestHandler(const std::string& path) :
+    HTTPRequestBaseHandler(path)
+{
 }
 
 HTTPDeviceRequestHandler::~HTTPDeviceRequestHandler() {
@@ -37,6 +37,15 @@ bool HTTPDeviceRequestHandler::CanHandleRequest(const std::string& path, const s
     if (path.compare("/control") == 0) {
         return true;
     }
+
+    if (path.compare("/add") == 0) {
+        return true;
+    }
+
+    if (path.compare("/remove") == 0) {
+        return true;
+    }
+
     return false;
 }
 
@@ -52,11 +61,43 @@ void HTTPDeviceRequestHandler::handleRequest(Poco::Net::HTTPServerRequest& reque
         handleControlDevice(request, responseData);
     }
 
+    if (requestPath().compare("/add") == 0) {
+        handleAddDevice(request, responseData);
+    }
+
+    if (requestPath().compare("/remove") == 0) {
+        handleRemoveDevice(request, responseData);
+    }
+
     std::ostream& ostr = response.send();
     Poco::JSON::Stringifier::stringify(responseData, ostr);
 }
 
 Poco::Dynamic::Var HTTPDeviceRequestHandler::handleControlDevice(Poco::Net::HTTPServerRequest& request, Poco::JSON::Object::Ptr& responseData) {
+    using namespace Poco::JSON;
+    using namespace Poco::Dynamic;
+    Application& app = Application::instance();
+    try {
+        Var result = parseServerRequest(request, responseData);
+        if (result.isEmpty()) {
+            ReportError::reportTo(HttpApiError::ParameterMissing, responseData);
+            return responseData;
+        }
+        Object::Ptr object = result.extract<Object::Ptr>();
+
+        std::string address = object->optValue("address", std::string());
+        int id = object->optValue("id", -1);
+        int control = object->optValue("control", -1);
+        fillJsonResponseData(address, id, control, responseData);
+    } catch (Poco::Exception &ex) {
+        app.logger().error("Exception while processing message: %s", ex.displayText());
+        ReportError::reportTo(HttpApiError::Unknown, responseData);
+        return responseData;
+    }
+    return responseData;
+}
+
+Poco::Dynamic::Var HTTPDeviceRequestHandler::handleAddDevice(Poco::Net::HTTPServerRequest& request, Poco::JSON::Object::Ptr& responseData) {
     using namespace Poco::JSON;
     using namespace Poco::Dynamic;
     Application& app = Application::instance();
@@ -68,8 +109,33 @@ Poco::Dynamic::Var HTTPDeviceRequestHandler::handleControlDevice(Poco::Net::HTTP
             return responseData;
         }
 
-        std::string deviceAddress = _params["deviceAddress"];
-        std::string deviceId = _params["deviceId"];
+        std::string address = _params["address"];
+        std::string id = _params["id"];
+        std::string control = _params["control"];
+
+
+    } catch (Poco::Exception &ex) {
+        app.logger().error("Exception while processing message: %s", ex.displayText());
+        ReportError::reportTo(HttpApiError::Unknown, responseData);
+        return responseData;
+    }
+    return responseData;
+}
+
+Poco::Dynamic::Var HTTPDeviceRequestHandler::handleRemoveDevice(Poco::Net::HTTPServerRequest& request, Poco::JSON::Object::Ptr& responseData) {
+    using namespace Poco::JSON;
+    using namespace Poco::Dynamic;
+    Application& app = Application::instance();
+    Parser parser;
+    try {
+        if(_params.size() <= 0)
+        {
+            ReportError::reportTo(HttpApiError::ParameterMissing, responseData);
+            return responseData;
+        }
+
+        std::string address = _params["address"];
+        std::string id = _params["id"];
         std::string control = _params["control"];
 
 
@@ -82,6 +148,12 @@ Poco::Dynamic::Var HTTPDeviceRequestHandler::handleControlDevice(Poco::Net::HTTP
 }
 
 
-void HTTPDeviceRequestHandler::fillJsonResponseData(const std::string& msg, Poco::JSON::Object::Ptr& responseData) {
-
+void HTTPDeviceRequestHandler::fillJsonResponseData(const std::string& address,
+                                                    int id,
+                                                    int control,
+                                                    Poco::JSON::Object::Ptr& responseData) {
+    responseData->set("error", "0");
+    responseData->set("adress", address);
+    responseData->set("id", id);
+    responseData->set("control", control);
 }

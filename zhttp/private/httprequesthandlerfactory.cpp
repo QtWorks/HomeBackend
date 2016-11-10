@@ -27,10 +27,10 @@ HTTPRequestHandler* HTTPRequestHandlerFactory::createRequestHandler(const HTTPSe
     if(v_Request.size() == 2){
         path = v_Request[0];
         params = v_Request[1];
-        if (HTTPDeviceRequestHandler::CanHandleRequest(path, request.getMethod())) {
-            return new HTTPDeviceRequestHandler(path, HTTPRequestHandlerFactory::params(params));
-        }
+    }
 
+    if (HTTPDeviceRequestHandler::CanHandleRequest(requestURI, request.getMethod())) {
+        return new HTTPDeviceRequestHandler(requestURI);
     }
 
     if (requestURI == "/time") {

@@ -9,4 +9,5 @@ SUBDIRS += \
     zworker \
     zsocket \
     zdevice \
-    zdb
+    zdb \
+    zgroup

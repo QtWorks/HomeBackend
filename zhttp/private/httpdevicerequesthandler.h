@@ -15,15 +15,20 @@
 class HTTPDeviceRequestHandler : public HTTPRequestBaseHandler
 {
 public:
-    HTTPDeviceRequestHandler(const std::string& path, const std::map<std::string, std::string>& params);
+    HTTPDeviceRequestHandler(const std::string& path);
     virtual ~HTTPDeviceRequestHandler();
 public:
     static bool CanHandleRequest(const std::string& path, const std::string& method);
     void handleRequest(Poco::Net::HTTPServerRequest& request, Poco::Net::HTTPServerResponse& response);
 private:
     Poco::Dynamic::Var handleControlDevice(Poco::Net::HTTPServerRequest& request, Poco::JSON::Object::Ptr& responseData);
+    Poco::Dynamic::Var handleAddDevice(Poco::Net::HTTPServerRequest& request, Poco::JSON::Object::Ptr& responseData);
+    Poco::Dynamic::Var handleRemoveDevice(Poco::Net::HTTPServerRequest& request, Poco::JSON::Object::Ptr& responseData);
 public:
-    void fillJsonResponseData(const std::string& msg, Poco::JSON::Object::Ptr& responseData);
+    void fillJsonResponseData(const std::string& address,
+                              int id,
+                              int control,
+                              Poco::JSON::Object::Ptr& responseData);
 private:
     std::map<std::string, std::string> _params;
 };

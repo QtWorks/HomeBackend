@@ -6,6 +6,10 @@
 class ZDBKey {
 public:
     //KEY generator
+    static std::string generatorGroups() {
+        return "groups";
+    }
+
     static std::string generatorUsers() {
         return "users";
     }
@@ -16,15 +20,31 @@ public:
         return "apikey";
     }
 
+    static std::string GroupSet() {
+        return "groups:set";
+    }
+
     static std::string UserSet() {
         return "users:set";
     }
+
+    static std::string GroupApiKey() {
+        return "groups:lookup:apikey";
+    }
+
     static std::string UserApiKey() {
         return "users:lookup:apikey";
     }
     static std::string UserEmail() {
         return "users:lookup:email";
     }
+
+    static std::string GroupEntry(int32_t id) {
+        std::stringstream stream;
+        stream << "groups:" << id;
+        return stream.str();
+    }
+
     static std::string UserEntry(int32_t userId) {
         std::stringstream stream;
         stream << "users:" << userId;
